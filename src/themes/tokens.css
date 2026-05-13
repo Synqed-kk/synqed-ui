@@ -1,32 +1,38 @@
 /*
  * @synqed/ui theme tokens
- * 4 variants: amber, obsidian, sage, slate
+ * 4 variants: karute (paired light + dark), obsidian, sage, slate
  * Import this file in your app's global CSS.
- * Set <html data-theme="amber"> to activate a theme.
+ * Set <html data-theme="karute"> to activate a theme. Add the `.dark`
+ * class on <html> for dark mode where the theme has a dark variant.
+ *
+ * v0.3.0 — `amber` renamed to `karute` and rebuilt as a neutral zinc
+ * palette with paired light/dark variants to match the karute design-
+ * spike reference. Migration: replace data-theme="amber" with
+ * data-theme="karute" in consuming apps.
  */
 
-/* ======================== AMBER ======================== */
-:root[data-theme="amber"] {
-  --color-bg: #f5ead0;
+/* ======================== KARUTE (light) ======================== */
+:root[data-theme="karute"] {
+  --color-bg: #ffffff;
   --color-bg-card: #ffffff;
-  --color-bg-card-hover: #faf4e4;
-  --color-bg-muted: #efe3c8;
-  --color-bg-overlay: rgba(26, 22, 16, 0.6);
-  --color-chrome: #1a1610;
-  --color-chrome-hover: #2a2418;
-  --color-chrome-active: #2a2418;
-  --color-chrome-border: #3a3428;
-  --color-chrome-text: #8a7a5a;
-  --color-chrome-text-active: #c8873e;
-  --color-accent: #c8873e;
-  --color-accent-hover: #b5792e;
-  --color-accent-light: #f5e6d0;
+  --color-bg-card-hover: #f4f4f5;
+  --color-bg-muted: #f4f4f5;
+  --color-bg-overlay: rgba(9, 9, 11, 0.6);
+  --color-chrome: #ffffff;
+  --color-chrome-hover: #f4f4f5;
+  --color-chrome-active: #f4f4f5;
+  --color-chrome-border: #e4e4e7;
+  --color-chrome-text: #71717a;
+  --color-chrome-text-active: #18181b;
+  --color-accent: #18181b;
+  --color-accent-hover: #27272a;
+  --color-accent-light: #f4f4f5;
   --color-accent-text: #ffffff;
-  --color-text: #2a1f0e;
-  --color-text-muted: #8a7a5a;
+  --color-text: #18181b;
+  --color-text-muted: #71717a;
   --color-text-inverse: #ffffff;
-  --color-border: #e8dcc0;
-  --color-border-strong: #d4c8a8;
+  --color-border: #e4e4e7;
+  --color-border-strong: #d4d4d8;
   --color-destructive: #ef4444;
   --color-destructive-text: #ffffff;
   --color-success: #22c55e;
@@ -38,6 +44,31 @@
   --radius-xl: 20px;
   --radius-full: 9999px;
   --sidebar-width: 80px;
+}
+
+/* ======================== KARUTE (dark) ======================== */
+:root[data-theme="karute"].dark,
+html.dark[data-theme="karute"] {
+  --color-bg: #09090b;
+  --color-bg-card: #18181b;
+  --color-bg-card-hover: #27272a;
+  --color-bg-muted: #18181b;
+  --color-bg-overlay: rgba(0, 0, 0, 0.7);
+  --color-chrome: #09090b;
+  --color-chrome-hover: #18181b;
+  --color-chrome-active: #18181b;
+  --color-chrome-border: #27272a;
+  --color-chrome-text: #71717a;
+  --color-chrome-text-active: #fafafa;
+  --color-accent: #fafafa;
+  --color-accent-hover: #e4e4e7;
+  --color-accent-light: #27272a;
+  --color-accent-text: #18181b;
+  --color-text: #fafafa;
+  --color-text-muted: #a1a1aa;
+  --color-text-inverse: #18181b;
+  --color-border: #27272a;
+  --color-border-strong: #3f3f46;
 }
 
 /* ======================== OBSIDIAN ======================== */
