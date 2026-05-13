@@ -63,7 +63,7 @@ export const MonthGrid = forwardRef<HTMLElement, MonthGridProps>(
       <section
         ref={ref}
         className={cn(
-          'overflow-hidden rounded-[var(--radius-xl)] bg-[var(--color-bg-card)] ring-1 ring-black/5 shadow-[0_1px_2px_rgba(0,0,0,0.04)]',
+          'flex flex-col overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-bg-card)] shadow-[0_1px_2px_rgba(0,0,0,0.04)]',
           className,
         )}
         {...props}
@@ -86,7 +86,7 @@ export const MonthGrid = forwardRef<HTMLElement, MonthGridProps>(
           ))}
         </div>
 
-        <div className="grid grid-cols-7">
+        <div className="grid flex-1 grid-cols-7 auto-rows-fr">
           {cells.map((cell) => {
             const dayOfWeek = cell.date.getDay()
             return (
@@ -96,7 +96,7 @@ export const MonthGrid = forwardRef<HTMLElement, MonthGridProps>(
                 onClick={() => onPickDay?.(cell.date)}
                 aria-label={`${cell.id} · ${cell.count} bookings`}
                 className={cn(
-                  'relative flex aspect-square min-h-[64px] flex-col items-start gap-1 border-l border-t border-black/5 px-2 py-2 text-left transition-colors',
+                  'relative flex min-h-[64px] flex-col items-start gap-1 border-l border-t border-black/5 px-2 py-2 text-left transition-colors',
                   '[&:nth-child(7n+1)]:border-l-0',
                   'hover:bg-[var(--color-bg-card-hover)]',
                   !cell.inMonth && 'bg-[var(--color-bg-muted)]/40',
