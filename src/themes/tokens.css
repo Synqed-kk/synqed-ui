@@ -24,10 +24,12 @@
   --color-chrome-border: #e4e4e7;
   --color-chrome-text: #71717a;
   --color-chrome-text-active: #18181b;
-  --color-accent: #18181b;
-  --color-accent-hover: #27272a;
-  --color-accent-light: #f4f4f5;
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4ed8;
+  --color-accent-light: #eff6ff;
   --color-accent-text: #ffffff;
+  /* Calendar density may be retinted independently of actions/selection. */
+  --color-month-density-medium: #2563eb;
   --color-text: #18181b;
   --color-text-muted: #71717a;
   --color-text-inverse: #ffffff;
@@ -60,10 +62,11 @@ html.dark[data-theme="karute"] {
   --color-chrome-border: #27272a;
   --color-chrome-text: #71717a;
   --color-chrome-text-active: #fafafa;
-  --color-accent: #fafafa;
-  --color-accent-hover: #e4e4e7;
-  --color-accent-light: #27272a;
+  --color-accent: #60a5fa;
+  --color-accent-hover: #93c5fd;
+  --color-accent-light: rgba(96, 165, 250, 0.16);
   --color-accent-text: #18181b;
+  --color-month-density-medium: #60a5fa;
   --color-text: #fafafa;
   --color-text-muted: #a1a1aa;
   --color-text-inverse: #18181b;
