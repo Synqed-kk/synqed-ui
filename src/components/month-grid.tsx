@@ -13,7 +13,7 @@ export type MonthDensityBucket = 'empty' | 'light' | 'medium' | 'busy'
 const DENSITY_CLASS: Record<MonthDensityBucket, string> = {
   empty: 'bg-transparent',
   light: 'bg-[var(--color-success)]',
-  medium: 'bg-[var(--color-accent)]',
+  medium: 'bg-[var(--color-month-density-medium,var(--color-accent))]',
   busy: 'bg-[var(--color-warning)]',
 }
 

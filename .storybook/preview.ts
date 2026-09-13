@@ -8,7 +8,7 @@ const preview: Preview = {
   decorators: [
     withThemeByDataAttribute({
       themes: {
-        Amber: 'amber',
+        Karute: 'karute',
         Obsidian: 'obsidian',
         Sage: 'sage',
         Slate: 'slate',
