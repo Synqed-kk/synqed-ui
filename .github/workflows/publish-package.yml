@@ -26,6 +26,13 @@ jobs:
         run: npm ci
 
       - name: Publish package
-        run: npm publish
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if npm view "@synqed-kk/ui@$version" version >/dev/null 2>&1; then
+            echo "@synqed-kk/ui@$version is already published"
+          else
+            npm publish
+          fi
+          npm view "@synqed-kk/ui@$version" dist --json
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
