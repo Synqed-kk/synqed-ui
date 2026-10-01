@@ -10,6 +10,17 @@ import { cn } from '../utils/cn.js'
 
 export type MonthDensityBucket = 'empty' | 'light' | 'medium' | 'busy'
 
+// Day number and weekday come from the cell id ('YYYY-MM-DD') when it is an
+// ISO date, so a server in UTC and a phone in Tokyo paint the same grid.
+// Date#getDate/getDay read the runtime's local zone and shift a
+// JST-midnight instant to the previous day under TZ=UTC.
+function cellDay(cell: MonthGridCell): { day: number; weekday: number } {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(cell.id)
+  if (!m) return { day: cell.date.getDate(), weekday: cell.date.getDay() }
+  const [y, mo, d] = [Number(m[1]), Number(m[2]), Number(m[3])]
+  return { day: d, weekday: new Date(Date.UTC(y, mo - 1, d)).getUTCDay() }
+}
+
 const DENSITY_CLASS: Record<MonthDensityBucket, string> = {
   empty: 'bg-transparent',
   light: 'bg-[var(--color-success)]',
@@ -49,10 +60,12 @@ interface MonthGridProps extends HTMLAttributes<HTMLElement> {
   onPickDay?: (date: Date) => void
   /** Hide the bottom density legend strip. */
   hideLegend?: boolean
+  /** Cell id ('YYYY-MM-DD') of the day to outline as selected. */
+  selectedDate?: string
 }
 
 export const MonthGrid = forwardRef<HTMLElement, MonthGridProps>(
-  ({ cells, copy, onPickDay, hideLegend, className, ...props }, ref) => {
+  ({ cells, copy, onPickDay, hideLegend, selectedDate, className, ...props }, ref) => {
     const L: MonthGridCopy = {
       ...DEFAULT_COPY,
       ...copy,
@@ -88,18 +101,21 @@ export const MonthGrid = forwardRef<HTMLElement, MonthGridProps>(
 
         <div className="grid flex-1 grid-cols-7 auto-rows-fr">
           {cells.map((cell) => {
-            const dayOfWeek = cell.date.getDay()
+            const { day, weekday: dayOfWeek } = cellDay(cell)
+            const selected = selectedDate !== undefined && cell.id === selectedDate
             return (
               <button
                 key={cell.id}
                 type="button"
                 onClick={() => onPickDay?.(cell.date)}
                 aria-label={`${cell.id} · ${cell.count} bookings`}
+                aria-pressed={selectedDate !== undefined ? selected : undefined}
                 className={cn(
                   'relative flex min-h-[64px] flex-col items-start gap-1 border-l border-t border-black/5 px-2 py-2 text-left transition-colors',
                   '[&:nth-child(7n+1)]:border-l-0',
                   'hover:bg-[var(--color-bg-card-hover)]',
                   !cell.inMonth && 'bg-[var(--color-bg-muted)]/40',
+                  selected && 'ring-2 ring-inset ring-[var(--color-accent)]',
                 )}
               >
                 <span
@@ -116,7 +132,7 @@ export const MonthGrid = forwardRef<HTMLElement, MonthGridProps>(
                             : 'text-[var(--color-text)]',
                   )}
                 >
-                  {cell.date.getDate()}
+                  {day}
                 </span>
 
                 {cell.count > 0 && cell.inMonth && (
