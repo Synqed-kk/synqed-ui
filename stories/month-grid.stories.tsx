@@ -31,7 +31,7 @@ function buildCells(anchor: Date, today: Date): MonthGridCell[] {
     const density: MonthDensityBucket =
       count === 0 ? 'empty' : count < 3 ? 'light' : count < 6 ? 'medium' : 'busy'
     cells.push({
-      id: cur.toISOString().slice(0, 10),
+      id: `${cur.getFullYear()}-${String(cur.getMonth() + 1).padStart(2, '0')}-${String(cur.getDate()).padStart(2, '0')}`,
       date: new Date(cur),
       inMonth: cur.getMonth() === anchor.getMonth(),
       isToday:

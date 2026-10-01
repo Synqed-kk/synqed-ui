@@ -1,7 +1,7 @@
 // CORE-24: MonthGrid must paint the same day numbers and weekend colours in
 // every runtime zone. Renders one JST month under TZ=UTC and TZ=Asia/Tokyo and
-// fails if the markup differs or 2026-09-01 is not a Tuesday "1".
-// Run after `npm run build`: node scripts/check-month-grid-tz.mjs
+// fails if the markup differs or a day number or weekend colour is wrong.
+// prepublishOnly runs it after the build.
 import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 
@@ -21,9 +21,13 @@ const self = fileURLToPath(import.meta.url)
 const render = (TZ) => execFileSync(process.execPath, [self, 'render'], { env: { ...process.env, TZ }, encoding: 'utf8' })
 const utc = render('UTC')
 const tokyo = render('Asia/Tokyo')
-const first = /aria-label="2026-09-01[^>]*>\s*<span class="([^"]*)">(\d+)</.exec(utc)
 if (utc !== tokyo) throw new Error('MonthGrid markup differs between TZ=UTC and TZ=Asia/Tokyo')
-if (!first || first[2] !== '1' || /destructive|accent/.test(first[1])) {
-  throw new Error(`2026-09-01 must render "1" in weekday colour, got ${first?.[2]} (${first?.[1]})`)
+// 2026-09-01 is a Tuesday, 09-05 a Saturday, 09-06 a Sunday.
+for (const [id, day, colour] of [['01', '1', null], ['05', '5', 'accent'], ['06', '6', 'destructive']]) {
+  const cell = new RegExp(`aria-label="2026-09-${id}[^>]*>\\s*<span class="([^"]*)">(\\d+)<`).exec(utc)
+  const tint = cell && (/destructive/.test(cell[1]) ? 'destructive' : /accent/.test(cell[1]) ? 'accent' : null)
+  if (!cell || cell[2] !== day || tint !== colour) {
+    throw new Error(`2026-09-${id} must render "${day}" with ${colour ?? 'weekday'} colour, got ${cell?.[2]} (${tint})`)
+  }
 }
 console.log('MonthGrid renders the same under UTC and Asia/Tokyo.')

@@ -10,15 +10,12 @@ import { cn } from '../utils/cn.js'
 
 export type MonthDensityBucket = 'empty' | 'light' | 'medium' | 'busy'
 
-// Day number and weekday come from the cell id ('YYYY-MM-DD') when it is an
-// ISO date, so a server in UTC and a phone in Tokyo paint the same grid.
-// Date#getDate/getDay read the runtime's local zone and shift a
-// JST-midnight instant to the previous day under TZ=UTC.
-function cellDay(cell: MonthGridCell): { day: number; weekday: number } {
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(cell.id)
-  if (!m) return { day: cell.date.getDate(), weekday: cell.date.getDay() }
-  const [y, mo, d] = [Number(m[1]), Number(m[2]), Number(m[3])]
-  return { day: d, weekday: new Date(Date.UTC(y, mo - 1, d)).getUTCDay() }
+// Day number and weekday come from the cell id ('YYYY-MM-DD'), never from
+// cell.date: Date#getDate/getDay read the runtime zone, so a UTC server
+// paints a JST-midnight instant as the previous day.
+function cellDay(id: string): { day: number; weekday: number } {
+  const [y, m, d] = id.split('-').map(Number)
+  return { day: d, weekday: new Date(Date.UTC(y, m - 1, d)).getUTCDay() }
 }
 
 const DENSITY_CLASS: Record<MonthDensityBucket, string> = {
@@ -29,7 +26,8 @@ const DENSITY_CLASS: Record<MonthDensityBucket, string> = {
 }
 
 export interface MonthGridCell {
-  /** Stable id for the cell (typically ISO date). */
+  /** The calendar day this cell shows, as 'YYYY-MM-DD'. The grid prints its
+   *  number and weekday from this id, so build it in the business's zone. */
   id: string
   date: Date
   /** When false, the cell is dimmed as overflow from adjacent months. */
@@ -101,7 +99,7 @@ export const MonthGrid = forwardRef<HTMLElement, MonthGridProps>(
 
         <div className="grid flex-1 grid-cols-7 auto-rows-fr">
           {cells.map((cell) => {
-            const { day, weekday: dayOfWeek } = cellDay(cell)
+            const { day, weekday: dayOfWeek } = cellDay(cell.id)
             const selected = selectedDate !== undefined && cell.id === selectedDate
             return (
               <button
