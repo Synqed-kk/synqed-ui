@@ -113,7 +113,7 @@ export const MonthGrid = forwardRef<HTMLElement, MonthGridProps>(
                   '[&:nth-child(7n+1)]:border-l-0',
                   'hover:bg-[var(--color-bg-card-hover)]',
                   !cell.inMonth && 'bg-[var(--color-bg-muted)]/40',
-                  selected && 'ring-2 ring-inset ring-[var(--color-accent)]',
+                  selected && 'bg-[var(--color-accent)]/8 ring-2 ring-inset ring-[var(--color-accent)]',
                 )}
               >
                 <span

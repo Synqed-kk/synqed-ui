@@ -30,4 +30,6 @@ for (const [id, day, colour] of [['01', '1', null], ['05', '5', 'accent'], ['06'
     throw new Error(`2026-09-${id} must render "${day}" with ${colour ?? 'weekday'} colour, got ${cell?.[2]} (${tint})`)
   }
 }
+const pressed = [...utc.matchAll(/aria-label="(\d{4}-\d{2}-\d{2})[^"]*" aria-pressed="true"/g)].map(m => m[1])
+if (pressed.join() !== '2026-09-05') throw new Error(`selectedDate must press only 2026-09-05, got [${pressed}]`)
 console.log('MonthGrid renders the same under UTC and Asia/Tokyo.')
