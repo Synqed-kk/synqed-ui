@@ -22,12 +22,16 @@ const render = (TZ) => execFileSync(process.execPath, [self, 'render'], { env: {
 const utc = render('UTC')
 const tokyo = render('Asia/Tokyo')
 if (utc !== tokyo) throw new Error('MonthGrid markup differs between TZ=UTC and TZ=Asia/Tokyo')
-// 2026-09-01 is a Tuesday, 09-05 a Saturday, 09-06 a Sunday.
-for (const [id, day, colour] of [['01', '1', null], ['05', '5', 'accent'], ['06', '6', 'destructive']]) {
+// Every day: its number, and accent on Saturday / destructive on Sunday.
+// 2026-09-01 is a Tuesday, so day d falls on weekday (d + 1) % 7.
+for (let d = 1; d <= 30; d++) {
+  const id = String(d).padStart(2, '0')
   const cell = new RegExp(`aria-label="2026-09-${id}[^>]*>\\s*<span class="([^"]*)">(\\d+)<`).exec(utc)
   const tint = cell && (/destructive/.test(cell[1]) ? 'destructive' : /accent/.test(cell[1]) ? 'accent' : null)
-  if (!cell || cell[2] !== day || tint !== colour) {
-    throw new Error(`2026-09-${id} must render "${day}" with ${colour ?? 'weekday'} colour, got ${cell?.[2]} (${tint})`)
+  const weekday = (d + 1) % 7
+  const colour = weekday === 6 ? 'accent' : weekday === 0 ? 'destructive' : null
+  if (!cell || cell[2] !== String(d) || tint !== colour) {
+    throw new Error(`2026-09-${id} must render "${d}" with ${colour ?? 'weekday'} colour, got ${cell?.[2]} (${tint})`)
   }
 }
 const pressed = [...utc.matchAll(/aria-label="(\d{4}-\d{2}-\d{2})[^"]*" aria-pressed="true"/g)].map(m => m[1])

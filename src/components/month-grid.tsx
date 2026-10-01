@@ -10,14 +10,6 @@ import { cn } from '../utils/cn.js'
 
 export type MonthDensityBucket = 'empty' | 'light' | 'medium' | 'busy'
 
-// Day number and weekday come from the cell id ('YYYY-MM-DD'), never from
-// cell.date: Date#getDate/getDay read the runtime zone, so a UTC server
-// paints a JST-midnight instant as the previous day.
-function cellDay(id: string): { day: number; weekday: number } {
-  const [y, m, d] = id.split('-').map(Number)
-  return { day: d, weekday: new Date(Date.UTC(y, m - 1, d)).getUTCDay() }
-}
-
 const DENSITY_CLASS: Record<MonthDensityBucket, string> = {
   empty: 'bg-transparent',
   light: 'bg-[var(--color-success)]',
@@ -99,7 +91,11 @@ export const MonthGrid = forwardRef<HTMLElement, MonthGridProps>(
 
         <div className="grid flex-1 grid-cols-7 auto-rows-fr">
           {cells.map((cell) => {
-            const { day, weekday: dayOfWeek } = cellDay(cell.id)
+            // Day and weekday come from the id ('YYYY-MM-DD'), never cell.date:
+            // Date#getDate/getDay read the runtime zone, so a UTC server would
+            // paint a JST-midnight instant as the previous day.
+            const [y, m, day] = cell.id.split('-').map(Number)
+            const dayOfWeek = new Date(Date.UTC(y, m - 1, day)).getUTCDay()
             const selected = selectedDate !== undefined && cell.id === selectedDate
             return (
               <button
