@@ -18,7 +18,8 @@ const DENSITY_CLASS: Record<MonthDensityBucket, string> = {
 }
 
 export interface MonthGridCell {
-  /** Stable id for the cell (typically ISO date). */
+  /** The calendar day this cell shows, as 'YYYY-MM-DD'. The grid prints its
+   *  number and weekday from this id, so build it in the business's zone. */
   id: string
   date: Date
   /** When false, the cell is dimmed as overflow from adjacent months. */
@@ -49,10 +50,12 @@ interface MonthGridProps extends HTMLAttributes<HTMLElement> {
   onPickDay?: (date: Date) => void
   /** Hide the bottom density legend strip. */
   hideLegend?: boolean
+  /** Cell id ('YYYY-MM-DD') of the day to outline as selected. */
+  selectedDate?: string
 }
 
 export const MonthGrid = forwardRef<HTMLElement, MonthGridProps>(
-  ({ cells, copy, onPickDay, hideLegend, className, ...props }, ref) => {
+  ({ cells, copy, onPickDay, hideLegend, selectedDate, className, ...props }, ref) => {
     const L: MonthGridCopy = {
       ...DEFAULT_COPY,
       ...copy,
@@ -88,18 +91,25 @@ export const MonthGrid = forwardRef<HTMLElement, MonthGridProps>(
 
         <div className="grid flex-1 grid-cols-7 auto-rows-fr">
           {cells.map((cell) => {
-            const dayOfWeek = cell.date.getDay()
+            // Day and weekday come from the id ('YYYY-MM-DD'), never cell.date:
+            // Date#getDate/getDay read the runtime zone, so a UTC server would
+            // paint a JST-midnight instant as the previous day.
+            const [y, m, day] = cell.id.split('-').map(Number)
+            const dayOfWeek = new Date(Date.UTC(y, m - 1, day)).getUTCDay()
+            const selected = selectedDate !== undefined && cell.id === selectedDate
             return (
               <button
                 key={cell.id}
                 type="button"
                 onClick={() => onPickDay?.(cell.date)}
                 aria-label={`${cell.id} · ${cell.count} bookings`}
+                aria-pressed={selectedDate !== undefined ? selected : undefined}
                 className={cn(
                   'relative flex min-h-[64px] flex-col items-start gap-1 border-l border-t border-black/5 px-2 py-2 text-left transition-colors',
                   '[&:nth-child(7n+1)]:border-l-0',
                   'hover:bg-[var(--color-bg-card-hover)]',
                   !cell.inMonth && 'bg-[var(--color-bg-muted)]/40',
+                  selected && 'bg-[var(--color-accent)]/8 ring-2 ring-inset ring-[var(--color-accent)]',
                 )}
               >
                 <span
@@ -116,7 +126,7 @@ export const MonthGrid = forwardRef<HTMLElement, MonthGridProps>(
                             : 'text-[var(--color-text)]',
                   )}
                 >
-                  {cell.date.getDate()}
+                  {day}
                 </span>
 
                 {cell.count > 0 && cell.inMonth && (

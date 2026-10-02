@@ -1,6 +1,6 @@
 {
   "name": "@synqed-kk/ui",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,7 +19,7 @@
     "build": "tsc",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build && node scripts/check-month-grid-tz.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.14",
